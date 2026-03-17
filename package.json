@@ -1,5 +1,5 @@
 {
-    "name": "donation-dapp",
+    "name": "brix-contracts",
     "version": "1.0.0",
     "description": "Web3 donation dApp on Polygon",
     "main": "index.js",
@@ -11,6 +11,8 @@
         "lint": "pnpm eslint . && pnpm solhint contracts/**/*.sol",
         "format": "pnpm prettier --write .",
         "format:check": "pnpm prettier --check .",
+        "deploy:amoy": "pnpm hardhat run scripts/deploy.ts --network amoy",
+        "verify:amoy": "pnpm hardhat verify --network amoy",
         "prepare": "husky"
     },
     "packageManager": "pnpm@10.28.2",

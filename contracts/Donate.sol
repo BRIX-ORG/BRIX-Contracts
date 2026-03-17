@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
@@ -22,7 +22,13 @@ contract Donate is ReentrancyGuard {
     uint256 public itemCount;
 
     event ItemCreated(uint256 indexed id, string metadataHash, address indexed artist);
-    event DonationReceived(uint256 indexed itemId, address indexed donor, uint256 amount, uint256 artistAmount, uint256 platformAmount);
+    event DonationReceived(
+        uint256 indexed itemId,
+        address indexed donor,
+        uint256 amount,
+        uint256 artistAmount,
+        uint256 platformAmount
+    );
 
     constructor(address _platformFeeAddress) {
         require(_platformFeeAddress != address(0), "Invalid platform fee address");
@@ -54,17 +60,17 @@ contract Donate is ReentrancyGuard {
         require(msg.value > 0, "Donation amount must be greater than 0");
 
         Item storage item = items[_itemId];
-        
+
         uint256 platformAmount = (msg.value * platformFeePercentage) / 100;
         uint256 artistAmount = msg.value - platformAmount;
 
         item.totalDonated += msg.value;
 
         // Split donation
-        (bool successPlatform, ) = payable(platformFeeAddress).call{value: platformAmount}("");
+        (bool successPlatform, ) = payable(platformFeeAddress).call{ value: platformAmount }("");
         require(successPlatform, "Platform fee transfer failed");
 
-        (bool successArtist, ) = payable(item.artist).call{value: artistAmount}("");
+        (bool successArtist, ) = payable(item.artist).call{ value: artistAmount }("");
         require(successArtist, "Artist transfer failed");
 
         emit DonationReceived(_itemId, msg.sender, msg.value, artistAmount, platformAmount);
@@ -75,7 +81,7 @@ contract Donate is ReentrancyGuard {
      * @param _newPercentage New platform fee percentage (0-100)
      */
     function updatePlatformFee(uint256 _newPercentage) external {
-        // Restricted to the owner in a real dApp. 
+        // Restricted to the owner in a real dApp.
         // Simplified for scaffolding.
         require(_newPercentage <= 100, "Percentage must be between 0 and 100");
         platformFeePercentage = _newPercentage;
