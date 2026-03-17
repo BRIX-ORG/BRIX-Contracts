@@ -11,7 +11,9 @@ const config: HardhatUserConfig = {
         hardhat: {},
         amoy: {
             url: process.env.POLYGON_AMOY_RPC_URL || 'https://polygon-amoy.drpc.org',
-            accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+            accounts: process.env.PRIVATE_KEY
+                ? [process.env.PRIVATE_KEY.trim().replace(/^["']|["']$/g, '')]
+                : [],
         },
     },
     gasReporter: {
