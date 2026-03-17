@@ -1,0 +1,25 @@
+node_modules/
+
+# Hardhat
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Coverage reports
+coverage/
+coverage.json
+
+# Builds
+build/
+dist/
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Environment
+.env
+.env.test
+.env.production
+.env.local
