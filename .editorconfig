@@ -1,0 +1,30 @@
+# This file helps maintain consistent coding styles between editors
+root = true
+
+# For all files
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown files - keep trailing whitespace (for line breaks)
+[*.md]
+trim_trailing_whitespace = false
+
+# YAML config files (optional: indent 2 spaces if bạn muốn cho đẹp)
+[*.yml]
+indent_size = 2
+
+[*.yaml]
+indent_size = 2
+
+# JSON files - follow Prettier's 4 spaces
+[*.json]
+indent_size = 4
+
+# SVG files
+[*.svg]
+indent_size = 4

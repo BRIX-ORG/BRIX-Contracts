@@ -1,22 +1,61 @@
 {
-  "name": "donation-dapp",
-  "version": "1.0.0",
-  "description": "Web3 donation dApp on Polygon",
-  "main": "index.js",
-  "scripts": {
-    "test": "npx hardhat test",
-    "compile": "npx hardhat compile",
-    "coverage": "npx hardhat coverage",
-    "gas-report": "npx hardhat test"
-  },
-  "dependencies": {
-    "@openzeppelin/contracts": "^5.6.1",
-    "dotenv": "^16.6.1"
-  },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.0",
-    "hardhat-gas-reporter": "^1.0.10",
-    "solidity-coverage": "^0.8.17"
-  }
+    "name": "donation-dapp",
+    "version": "1.0.0",
+    "description": "Web3 donation dApp on Polygon",
+    "main": "index.js",
+    "scripts": {
+        "test": "pnpm hardhat test",
+        "compile": "pnpm hardhat compile",
+        "coverage": "pnpm hardhat coverage",
+        "gas-report": "pnpm hardhat test",
+        "lint": "pnpm eslint . && pnpm solhint contracts/**/*.sol",
+        "format": "pnpm prettier --write .",
+        "format:check": "pnpm prettier --check .",
+        "prepare": "husky"
+    },
+    "packageManager": "pnpm@10.28.2",
+    "lint-staged": {
+        "*.{js,ts,mjs,mts,cts,jsx,tsx}": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "*.sol": [
+            "prettier --write"
+        ],
+        "*.{json,md}": [
+            "prettier --write"
+        ]
+    },
+    "dependencies": {
+        "@openzeppelin/contracts": "^5.6.1",
+        "dotenv": "^16.6.1"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^20.5.0",
+        "@commitlint/config-conventional": "^20.5.0",
+        "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+        "@typechain/ethers-v6": "^0.5.1",
+        "@typechain/hardhat": "^9.1.0",
+        "@types/chai": "^4.3.20",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "^25.5.0",
+        "@typescript-eslint/eslint-plugin": "^8.57.1",
+        "@typescript-eslint/parser": "^8.57.1",
+        "chai": "^4.5.0",
+        "eslint": "^10.0.3",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.5",
+        "ethers": "^6.16.0",
+        "hardhat": "^2.22.0",
+        "hardhat-gas-reporter": "^1.0.10",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.4.0",
+        "prettier": "^3.8.1",
+        "prettier-plugin-solidity": "^2.3.1",
+        "solhint": "^6.0.3",
+        "solidity-coverage": "^0.8.17",
+        "ts-node": "^10.9.2",
+        "typechain": "^8.3.2",
+        "typescript": "^5.9.3"
+    }
 }

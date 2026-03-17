@@ -1,34 +1,58 @@
 name: Smart Contracts CI Layer
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    push:
+        branches: ['main']
+    pull_request:
+        branches: ['main']
 
 jobs:
-  build-and-test:
-    name: Build & Test Contracts
-    runs-on: ubuntu-latest
+    build-and-test:
+        name: Build & Test Contracts
+        runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: 'npm'
+            - name: Use Node.js 20.x
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
 
-    - name: Install dependencies
-      run: npm install
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+                  run_install: false
 
-    - name: Compile Smart Contracts
-      run: npm run compile
+            - name: Get pnpm store directory
+              shell: bash
+              run: |
+                  echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-    - name: Run Tests
-      run: npm run test
+            - name: Setup pnpm cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ env.STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
 
-    - name: Run Coverage
-      run: npm run coverage
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Check Formatting
+              run: pnpm run format:check
+
+            - name: Run Linting
+              run: pnpm run lint
+
+            - name: Compile Smart Contracts
+              run: pnpm run compile
+
+            - name: Run Tests
+              run: pnpm run test
+
+            - name: Run Coverage
+              run: pnpm run coverage

@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+
+# Hardhat build outputs
+artifacts
+cache
+typechain-types
+coverage
+coverage.json
+
+# Environment files
+.env
+
+# OS files
+.DS_Store
+
+# Logs
+*.log
+
+# IDE
+.vscode
+.idea
+
+# Antigravity
+.gemini
+
+# Git
+.git
