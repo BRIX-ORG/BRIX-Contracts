@@ -2,22 +2,23 @@ import { ethers } from 'hardhat';
 
 async function main() {
     const [deployer] = await ethers.getSigners();
-    console.log('Deploying contracts with the account:', deployer.address);
+    console.log('Deploying BrixRegistry with account:', deployer.address);
 
-    // Platform fee address defaults to the deployer for this example
+    // Platform fee address defaults to the deployer
     const platformFeeAddress = deployer.address;
 
-    // Get the ContractFactory
-    const Donate = await ethers.getContractFactory('Donate');
+    // IPFS fee: 0.001 MATIC (adjust as needed)
+    const ipfsFee = ethers.parseEther('0.001');
 
-    // Deploy the contract
-    const donate = await Donate.deploy(platformFeeAddress);
+    const BrixRegistry = await ethers.getContractFactory('BrixRegistry');
+    const registry = await BrixRegistry.deploy(platformFeeAddress, ipfsFee);
 
-    // Wait for the deployment to finish
-    await donate.waitForDeployment();
+    await registry.waitForDeployment();
 
-    const donateAddress = await donate.getAddress();
-    console.log('Donate contract deployed to:', donateAddress);
+    const registryAddress = await registry.getAddress();
+    console.log('BrixRegistry deployed to:', registryAddress);
+    console.log('Platform fee address:', platformFeeAddress);
+    console.log('IPFS fee:', ethers.formatEther(ipfsFee), 'MATIC');
 }
 
 main()

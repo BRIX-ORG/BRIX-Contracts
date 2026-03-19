@@ -4,7 +4,7 @@ A Web3 donation platform built on Polygon (Amoy Testnet) using Hardhat and TypeS
 
 ## 🚀 Features
 
-- **Smart Contract (Donate.sol)**: Supports item creation and donations with an automatic 10% platform fee split.
+- **Smart Contract (BrixRegistry.sol)**: Supports item creation, IPFS fee payments, and donations with an automatic platform fee split and pull-payment mechanism.
 - **TypeScript Support**: Full Typechain integration for strictly typed contract interactions.
 - **pnpm**: Fast and efficient package management.
 - **Robust Tooling**: Prettier, ESLint, Solhint, and Husky (Conventional Commits).
@@ -45,7 +45,7 @@ ETHERSCAN_API_KEY="your_polygonscan_api_key"
 
 ### Deployment & Verification
 
-- `pnpm run deploy:amoy`: Deploy the `Donate` contract to Polygon Amoy.
+- `pnpm run deploy:amoy`: Deploy the `BrixRegistry` contract to Polygon Amoy.
 - `pnpm run verify:amoy <CONTRACT_ADDRESS> <ARGUMENTS>`: Verify contract source code on Polygonscan.
 
 ## 🌐 Deployment (CI/CD)
