@@ -24,6 +24,27 @@ const bytes32BrickId = ethers.id(uuid); // Output: 0x... (32 bytes)
 
 Users must pay a minimum fee (e.g., `0.001 MATIC`) before the Backend uploads files/metadata to the IPFS network.
 
+```mermaid
+sequenceDiagram
+    participant FE as Frontend
+    participant SC as BrixRegistry
+    participant BE as Backend
+    participant Q as BullMQ
+    participant IPFS as Pinata IPFS
+    participant DB as PostgreSQL
+
+    FE->>SC: payForIPFS(bytes32BrickId) + fee MATIC
+    SC->>BE: emit PaidForIPFS(user, bytes32BrickId)
+    Note over SC: ❌ NO state stored on-chain<br/>Only fee held in contract
+
+    BE->>Q: addDistributeIpfsJob()
+    Q->>IPFS: Upload image & metadata JSON
+    Note over IPFS: metadata = {username, timestamp,<br/>nonce, image: ipfs://CID}
+
+    Q->>DB: Update 'ipfs_uploaded' status
+    Q->>FE: WebSocket: success (imageCid, ipfsCid)
+```
+
 - **Frontend Action**:
     1. Fetch current fee: `const fee = await contract.ipfsFee()`
     2. Execute: `await contract.payForIPFS(bytes32BrickId, { value: fee })`
@@ -34,6 +55,25 @@ Users must pay a minimum fee (e.g., `0.001 MATIC`) before the Backend uploads fi
 ### Flow 2: Minting the Brick On-chain (`mint`)
 
 After the Backend successfully uploads to IPFS and returns an `ipfsCid`, the user finalizes the process by minting the brick on-chain.
+
+```mermaid
+sequenceDiagram
+    participant FE as Frontend
+    participant SC as BrixRegistry
+    participant BE as Backend
+    participant Q as BullMQ
+    participant DB as PostgreSQL
+
+    FE->>SC: mint(bytes32BrickId, ipfsCid)
+    SC->>SC: Store: bricks[id] = {creator, ipfsCid, totalDonated: 0}
+    SC->>BE: emit BrickCreated(id, creator, ipfsCid)
+
+    BE->>Q: addMintSuccessJob()
+    Q->>DB: Update 'onchain' status & TxHash
+    Q->>DB: INSERT OnChainActivity (MINT)
+
+    Q->>FE: WebSocket: brick_minted (onChainId, txHash)
+```
 
 - **Frontend Action**:
     1. Verify permission: `await contract.hasPaid(bytes32BrickId, userAddress)` (Must return `true`).
@@ -47,6 +87,38 @@ After the Backend successfully uploads to IPFS and returns an `ipfsCid`, the use
 ### Flow 3: Donation & Pull-Payment (`donate` / `withdrawDonation`)
 
 Anyone can donate MATIC to an existing BRIX (using the On-chain ID). Funds are automatically split between the Artist and Platform based on configured percentages. To prevent transaction failures (reentrancies/bricked receiver contracts), funds are **NOT** sent directly to the wallets. They are securely held in the contract until the user explicitly withdraws them.
+
+```mermaid
+sequenceDiagram
+    participant FE as Frontend
+    participant SC as BrixRegistry
+    participant BE as Backend
+    participant Q as BullMQ
+    participant DB as PostgreSQL
+
+    FE->>SC: donate(onChainId) + MATIC
+    SC->>SC: Calculate split (e.g. 90% artist / 10% platform)
+    SC->>SC: 🔹 pendingWithdrawals[creator] += artistAmount
+    SC->>SC: 🔹 pendingWithdrawals[platform] += platformAmount
+    SC->>BE: emit Donated(brickId, donor, total, artistAmt, platformAmt)
+
+    BE->>Q: addDonateJob()
+    Q->>DB: INSERT Donation & OnChainActivity (DONATE)
+```
+
+**Withdrawal (Pull-Payment):**
+
+```mermaid
+sequenceDiagram
+    participant User as Artist/Platform
+    participant SC as BrixRegistry Contract
+
+    User->>SC: withdrawDonation()
+    SC->>SC: check pendingWithdrawals[msg.sender]
+    SC->>SC: pendingWithdrawals[msg.sender] = 0
+    SC->>User: Transfer MATIC safely (Pull-Payment)
+    SC->>SC: emit DonationWithdrawn(msg.sender, amount)
+```
 
 - **Frontend Action (Donator)**:
     1. Execute: `await contract.donate(onChainId, { value: ethers.parseEther("10") })`
