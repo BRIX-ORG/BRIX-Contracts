@@ -6,7 +6,15 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const config: HardhatUserConfig = {
-    solidity: '0.8.28',
+    solidity: {
+        version: '0.8.28',
+        settings: {
+            evmVersion: 'paris',
+            optimizer: {
+                enabled: false,
+            },
+        },
+    },
     networks: {
         hardhat: {},
         amoy: {
@@ -24,14 +32,20 @@ const config: HardhatUserConfig = {
         apiKey: process.env.ETHERSCAN_API_KEY || '',
         customChains: [
             {
-                network: 'polygonAmoy',
+                network: 'amoy',
                 chainId: 80002,
                 urls: {
-                    apiURL: 'https://api-amoy.polygonscan.com/api/v2',
+                    // apiURL: 'https://api-amoy.polygonscan.com/api/v2',
+                    // apiURL: 'https://api.etherscan.io/v2/api',
+                    // apiURL: 'https://api-amoy.polygonscan.com/api',
+                    apiURL: 'https://api.etherscan.io/v2/api?chainid=80002',
                     browserURL: 'https://amoy.polygonscan.com',
                 },
             },
         ],
+    },
+    sourcify: {
+        enabled: true,
     },
 };
 
